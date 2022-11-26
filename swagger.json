@@ -1,0 +1,11 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+    "title": "API PW",
+    "description": "Essa API fornece recursos para persistência de votos em um banco de dados",
+    "contact": {
+    "email": "guilhermepissaia@alunos.utfpr.edu.br"
+    },
+    "version": "1.0.0"
+    }
+}

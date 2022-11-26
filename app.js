@@ -30,12 +30,10 @@ db.sequelize.sync({force: true}).then(() => {
         senha: '123',
         tipousuario: 0
     });
-});
-/*
+});*/
 
 app.listen(8081, function(){
     console.log("Servidor no http://localhost:8081");
 });
-*/
 
 console.log("bn")
