@@ -25,7 +25,8 @@ app.use("/api-docs",swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 //app.use(middlewares.logRegister, middlewares.sessionControl, middlewares.checkCreate);
 app.use(routes);
 
-/*db.sequelize.sync({force: true}).then(() => {
+/*
+db.sequelize.sync({force: true}).then(() => {
     console.log('{ force: true } | Gerando Banco de Dados. Aguarde...');
 });*/
 

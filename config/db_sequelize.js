@@ -8,5 +8,8 @@ var db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 db.Candidato = require('../models/candidato.js')(sequelize, Sequelize);
+db.IntencaoVoto = require('../models/intencaoVoto.js')(sequelize, Sequelize);
+
+db.Candidato.hasMany(db.IntencaoVoto, {as: 'intencaovotos', foreignKey: 'candidatoid'});
 
 module.exports = db;
