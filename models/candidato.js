@@ -1,27 +1,23 @@
 module.exports = (sequelize, Sequelize) => {
-    const Usuario = sequelize.define('usuario', {
+    const Candidato = sequelize.define('candidato', {
         id: {
             type: Sequelize.INTEGER,
             autoIncrement: true,
             allowNull: false,
             primaryKey: true
         },
-        login: {
-            type: Sequelize.STRING,
-            allowNull: false
-        },
         nome: {
             type: Sequelize.STRING,
             allowNull: false
         },
-        senha: {
+        partido: {
             type: Sequelize.STRING,
             allowNull: false
         },
-        tipousuario: {
-            type: Sequelize.INTEGER, //0: Administrador, 1: Apostador
+        cargo: {
+            type: Sequelize.STRING, //dá pra fazer com um int pra representar Governador ou Presidente, já que são só esses dois cargos
             allowNull: false
         }
     });
-    return Usuario;
+    return Candidato;
 }
