@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize');
-const sequelize = new Sequelize('web2_projeto_bolao' , 'postgres', 'sql#123', { //trocar a senha pro teu banco, animal
+const sequelize = new Sequelize('web2_API' , 'postgres', 'sql#123', { //trocar a senha pro teu banco, animal
     host: 'localhost',
     dialect: 'postgres'
   });
@@ -7,6 +7,6 @@ const sequelize = new Sequelize('web2_projeto_bolao' , 'postgres', 'sql#123', { 
 var db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
-//db.Usuario = require('../models/usuario.js')(sequelize, Sequelize);
+db.Candidato = require('../models/candidato.js')(sequelize, Sequelize);
 
 module.exports = db;
