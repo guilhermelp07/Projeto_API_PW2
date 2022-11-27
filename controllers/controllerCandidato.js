@@ -1,5 +1,5 @@
 module.exports = {
     async getCandidatoCreate(req, res){
-        return res.render('/candidatoCreate');
+        return res.send('../views/candidatoCreate');
     }
 }
