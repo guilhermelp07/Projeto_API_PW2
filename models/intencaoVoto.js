@@ -14,6 +14,10 @@ module.exports = (sequelize, Sequelize) => {
         sexo: {
             type: Sequelize.STRING,
             allowNull: false
+        },
+        candidato: {
+            type: Sequelize.INTEGER,
+            allowNull: true
         }
     });
     return intencaoVoto;

@@ -21,6 +21,12 @@ module.exports = {
         return res.json({"data": {"status": "error"}});
     },
     async deletarCandidato(req, res){
+        var candidato = await db.Candidato.findOne({where: {id: req.params.id}});
+        if(!candidato || candidato == undefined){
+            console.log(candidato);
+            return res.status(204).json();
+        }
+    
         var intencoes = await db.IntencaoVoto.findOne({where: {candidatoid: req.params.id}});
         if(intencoes){
             return res.status(204).json();
@@ -40,5 +46,27 @@ module.exports = {
     },
     async getResultados(req, res){
         return res.redirect("/");
+    },
+    async registrarVoto(req, res){
+        var candidato = req.params.id
+        if(candidato == undefined){
+            candidato = 0
+        }
+        var intencao = db.IntencaoVoto.findOne({where: {id: candidato}});
+        if(intencao && candidato != 0){
+            return res.status(204).json();
+        }
+        else {
+            await db.IntencaoVoto.create({
+                cpf: '123',
+                sexo: 'M',
+                candidatoid: candidato
+            }).then((intencaoVoto)=>{
+                return res.json({"data": {"status": "success", intencaoVoto}});
+            });
+        }
+    },
+    async deletarVoto(req, res){
+        
     }
 }

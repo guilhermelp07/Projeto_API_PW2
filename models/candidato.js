@@ -15,7 +15,7 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: false
         },
         cargo: {
-            type: Sequelize.STRING, //dá pra fazer com um int pra representar Governador ou Presidente, já que são só esses dois cargos
+            type: Sequelize.INTEGER, //0 - Governador, 1 - Presidente
             allowNull: false
         }
     });
