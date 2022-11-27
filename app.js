@@ -25,10 +25,10 @@ app.use("/api-docs",swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 //app.use(middlewares.logRegister, middlewares.sessionControl, middlewares.checkCreate);
 app.use(routes);
 
-
+/*
 db.sequelize.sync({force: true}).then(() => {
     console.log('{ force: true } | Gerando Banco de Dados. Aguarde...');
-});
+});*/
 
 app.listen(8081, function(){
     console.log("Servidor no http://localhost:8081");

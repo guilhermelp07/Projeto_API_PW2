@@ -10,7 +10,7 @@ module.exports = {
         await db.Candidato.create({
             nome: 'teste',
             partido: 'teste',
-            cargo: 'teste'
+            cargo: 0
         });
         return res.redirect("/home");
     },
@@ -27,7 +27,7 @@ module.exports = {
             return res.status(204).json();
         }
     
-        var intencoes = await db.IntencaoVoto.findOne({where: {candidatoid: req.params.id}});
+        var intencoes = await db.IntencaoVoto.findOne({where: {candidato: req.params.id}});
         if(intencoes){
             return res.status(204).json();
         }
@@ -48,23 +48,20 @@ module.exports = {
         return res.redirect("/");
     },
     async registrarVoto(req, res){
-        var candidato = req.params.id
-        if(candidato == undefined){
-            candidato = 0
-        }
-        var intencao = db.IntencaoVoto.findOne({where: {id: candidato}});
-        if(intencao && candidato != 0){
+        var cpfTeste = '1234';
+        var candidato = req.params.id;
+
+        var intencao = await db.IntencaoVoto.findOne({where: {cpf: cpfTeste}}); //req.body.cpf
+        if(intencao){
             return res.status(204).json();
         }
-        else {
-            await db.IntencaoVoto.create({
-                cpf: '123',
-                sexo: 'M',
-                candidatoid: candidato
-            }).then((intencaoVoto)=>{
-                return res.json({"data": {"status": "success", intencaoVoto}});
-            });
-        }
+        await db.IntencaoVoto.create({
+            cpf: cpfTeste,
+            sexo: 'M',
+            candidatoid: candidato
+        }).then((intencaoVoto)=>{
+            return res.json({"data": {"status": "success", intencaoVoto}});
+        });
     },
     async deletarVoto(req, res){
         
