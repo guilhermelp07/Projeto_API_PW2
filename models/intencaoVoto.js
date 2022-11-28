@@ -18,6 +18,10 @@ module.exports = (sequelize, Sequelize) => {
         candidato: {
             type: Sequelize.INTEGER,
             allowNull: true
+        },
+        cargo: {
+            type: Sequelize.INTEGER,
+            allowNull: false
         }
     });
     return intencaoVoto;

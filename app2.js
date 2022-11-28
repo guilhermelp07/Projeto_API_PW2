@@ -1,6 +1,6 @@
 /* Testes realizados com dados genéricos
  * Esta aplicação consome todas as rotas e faz o tratamento dos retornos da API
- *
+ * Para testar, basta rodar o app.js e app2.js simultaneamente e inserir os endereços abaixo no navegador, localhost:3000
  * 
  */
 
@@ -15,12 +15,25 @@ app.get('/testePostCandidato', async (req,res)=>{
     res.send(resposta);
 });
 
+//400: bad request
+app.get('/testePostCandidatoNulo', async (req,res)=>{
+    var resposta = await unirest.post('http://localhost:8081/api/candidato')
+    .send({"nome": "Bolsonaro"});
+    res.send(resposta);
+});
+
 app.get('/testePutCandidato/:id', async (req,res)=>{
     const {id} = req.params;
     var resposta = await unirest.put('http://localhost:8081/api/candidato/'+id)
     .send({"nome": "Jair Bolsonaro", "partido": "Partido Liberal", "cargo": "0"});
     res.send(resposta);
-})
+});
+
+app.get('/testeDeleteCandidato/:id', async (req,res)=>{
+    const {id} = req.params;
+    var resposta = await unirest.delete('http://localhost:8081/api/candidato/'+id);
+    res.send(resposta);
+});
 
 app.get('/testeGetCandidatos', async (req,res)=>{
     var resposta = await unirest.get('http://localhost:8081/api/candidato');
@@ -31,6 +44,18 @@ app.get('/testeGetCandidatos', async (req,res)=>{
 app.get('/testeGetCandidato/:id', async (req,res)=>{
     const {id} = req.params;
     var resposta = await unirest.get('http://localhost:8081/api/candidato/'+id);
+    res.send(resposta);
+});
+
+app.get('/testePostIntencaoVoto', async (req,res)=>{
+    var resposta = await unirest.post('http://localhost:8081/api/intencaovoto')
+    .send({"cpf": "54321", "sexo": "M", "candidato": "1"});
+    res.send(resposta);
+});
+
+app.get('/testePostIntencaoVoto2', async (req,res)=>{
+    var resposta = await unirest.post('http://localhost:8081/api/intencaovoto')
+    .send(req);
     res.send(resposta);
 });
 
