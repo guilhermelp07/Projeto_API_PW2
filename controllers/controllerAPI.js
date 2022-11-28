@@ -1,4 +1,26 @@
 const db = require('../config/db_sequelize');
+var cargoParm = '0';
+var sexoParm = 'X';
+const query =   " select" +
+                "   case " +
+                "     when iv.candidato = -1 then \'Nulos\'"+
+                "     when iv.candidato = 0 then \'Brancos\'"+
+                "     else c.nome "+
+                "   end as candidato, "+
+                "   cast((cast(count(1) as decimal(10,2)) / cast((select count(1) from intencaovotos where cargo = " + cargoParm + " and (sexo = '" + sexoParm + "' or '" + sexoParm + "' = 'X')) as decimal(10,2))) * 100 as decimal(10,2)) || '%' as percentual, "+
+                "   count(1) as total "+
+                " from "+
+                "   intencaovotos as iv "+
+                "   left join candidatos as c "+
+                "     on( "+
+                "       c.id = iv.candidato "+
+                "     ) "+
+                " where "+
+                "   iv.cargo = " + cargoParm + " and "+
+                "   ( iv.sexo = '" + sexoParm + "' or '" + sexoParm + "' = 'X' ) "+
+                " group by "+
+                "   c.nome, "+
+                "   iv.candidato ";
 module.exports = {
     async cadastrarCandidato(req, res){
         console.log(req.body.nome + " - " + req.body.partido + " - " + req.body.cargo);
@@ -66,26 +88,38 @@ module.exports = {
             res.status(204).json({"data": {"status": "no content", "errorMessage": "Candidato não encontrado"}});
     },
     async getResultados(req, res){
-        return res.redirect("/");
+        sexoParm = 'X';
+        var sexo = req.body.sexo; 
+        if(sexo != undefined && sexo)
+            sexoParm = sexo;
+
+        const [result, metadata] = await db.sequelize.query(query);
+        return res.status(200).json(result);
     },
     async registrarVoto(req, res){
         var cpf = req.body.cpf;
         var sexo = req.body.sexo;
         var candidato = req.body.candidato;
-        var cargo = 0;
+        var cargo = req.body.cargo;
 
-        if(!candidato || !cpf || !sexo)
+        if(!cpf || !sexo || !cargo)
             return res.status(400).json({"data": {"status": "error", "errorMessage": "Parâmetro(s) nulo(s)!"}});
-        const [candidatoBusca, metadata] = await db.sequelize.query('select cargo from candidatos where id = ' + candidato);
-        if(candidatoBusca && candidatoBusca[0]){
-            console.log(candidatoBusca[0]);
-            cargo = candidatoBusca[0].cargo;
-            console.log(cargo);
+        if((candidato == undefined ? 0 : candidato) > 0){
+            const [candidatoBusca, metadata] = await db.sequelize.query('select cargo from candidatos where id = ' + candidato);
+            if(candidatoBusca && candidatoBusca[0]){
+                console.log(candidatoBusca[0]);
+                var cargoBusca = candidatoBusca[0].cargo;
+                console.log(cargoBusca);
+                if(cargoBusca != cargo)
+                    return res.status(400).json({"data": {"status": "error", "errorMessage": "Candidato não está concorrendo ao cargo informado"}});
+            }
+            else{
+                console.log("erro RETORNOU");
+                return res.status(204).json({"data": {"status": "no content", "message": "Candidato não encontrado"}});
+            }
         }
-        else{
-            console.log("erro RETORNOU");
-            return res.status(204).json({"data": {"status": "no content", "message": "Candidato não encontrado"}});
-        }
+
+        if(candidato == undefined || !candidato) candidato = -1;
 
         var intencao = await db.IntencaoVoto.findOne({where: {cpf: cpf, cargo: cargo}});
         if(intencao){

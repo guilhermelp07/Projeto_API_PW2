@@ -5,26 +5,31 @@
             <form action="api/intencaovoto" method="POST">
                 CPF: <input name="cpf"><br>
                 Sexo:
-                <input type="radio" name="sexoRadio" onclick="check(document.getElementById('sexo'))">Masc.
-                <input type="radio" name="sexoRadio" onclick="check(document.getElementById('sexo'))">Fem.
+                <input type="radio" name="sexoRadio" onclick="check(document.getElementById('sexo'), 'sexoRadio')">Masc.
+                <input type="radio" name="sexoRadio" onclick="check(document.getElementById('sexo'), 'sexoRadio')">Fem.
                 <input type="hidden" name="sexo" id="sexo">
                 <br>
                 Id do Candidato: <input name="candidato"><br>
+                <input type="radio" name="cargoRadio" onclick="check(document.getElementById('cargo'),'cargoRadio')">Presidente
+                <input type="radio" name="cargoRadio" onclick="check(document.getElementById('cargo'), 'cargoRadio')">Governador
+                <input type="hidden" name="cargo" id="cargo">
                 <br>
                 <button type="submit">Registrar</button>
             </form>
         </center>
     </body>
     <script>
-        function check(element){
-            var radio = document.getElementsByName("sexoRadio");
+        function check(element, name){
+            var radio = document.getElementsByName(name);
             if(radio[0].checked){
-                element.value = 'M'
+                if(name == 'sexoRadio') element.value = 'M'
+                else element.value = 0
                 console.log(element.value)
             }
             else {
-                element.value = 'F'
-                console.log( element.value)
+                if(name == 'sexoRadio') element.value = 'F'
+                else element.value = 1
+                console.log(element.value)
             }
         }
     </script>

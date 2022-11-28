@@ -49,7 +49,7 @@ app.get('/testeGetCandidato/:id', async (req,res)=>{
 
 app.get('/testePostIntencaoVoto', async (req,res)=>{
     var resposta = await unirest.post('http://localhost:8081/api/intencaovoto')
-    .send({"cpf": "54321", "sexo": "M", "candidato": "1"});
+    .send({"cpf": "54321787", "sexo": "M", "candidato": "1", "cargo": '0'});
     res.send(resposta);
 });
 
