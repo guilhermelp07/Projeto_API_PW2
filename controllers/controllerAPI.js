@@ -2,20 +2,18 @@ const db = require('../config/db_sequelize');
 const candidato = require('../models/candidato');
 module.exports = {
     async cadastrarCandidato(req, res){
-        // await db.Candidato.create({
-        //     nome: req.body.nome,
-        //     partido: req.body.partido,
-        //     cargo: req.body.cargo
-        // });
+        var cargo = req.body.cargo;
+        console.log("cargo atual: " + cargo);
         await db.Candidato.create({
-            nome: 'teste',
-            partido: 'teste',
-            cargo: 0
+            nome: req.body.nome,
+            partido: req.body.partido,
+            cargo: cargo
+        }).then((candidato)=>{
+            return res.json({"data": {"status": "success", candidato}});
         });
-        return res.redirect("/home");
     },
     async editarCandidato(req, res){
-        await db.Candidato.update({nome: 'req.body.nome', partido: req.body.partido, cargo: req.body.cargo}, {where:{id: req.params.id}}).then((candidato)=>{
+        await db.Candidato.update({nome: req.body.nome, partido: req.body.partido, cargo: req.body.cargo}, {where:{id: req.params.id}}).then((candidato)=>{
             return res.json({"data": {"status": "success", candidato}});
         });
         return res.json({"data": {"status": "error"}});
@@ -41,6 +39,13 @@ module.exports = {
         var candidatos = await db.Candidato.findAll();
         if(candidatos)
             res.json({"data": { "status": "success", candidatos}});
+        else
+            res.status(204).json();
+    },
+    async getCandidatoById(req, res){
+        var candidato = await db.Candidato.findOne({where: {id: req.params.id}});
+        if(candidato)
+            res.json({"data": { "status": "success", candidato}});
         else
             res.status(204).json();
     },

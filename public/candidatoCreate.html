@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <center>
+            <form action="api/candidato" method="POST">
+                Nome<input name="nome"><br>
+                Partido<input name="partido"><br>
+                <input type="radio" name="cargoRadio" onclick="check(document.getElementById('cargo'))">Presidente
+                <input type="radio" name="cargoRadio" onclick="check(document.getElementById('cargo'))">Governador
+                <input type="hidden" name="cargo" id="cargo">
+                <br>
+                <button type="submit">Cadastrar</button>
+            </form>
+        </center>
+    </body>
+    <script>
+        function check(element){
+            var radio = document.getElementsByName("cargoRadio");
+            if(radio[0].checked){
+                element.value = 0
+                console.log("0 " + element.value)
+            }
+            else {
+                element.value = 1
+                console.log("1 " + element.value)
+            }
+        }
+    </script>
+</html>
