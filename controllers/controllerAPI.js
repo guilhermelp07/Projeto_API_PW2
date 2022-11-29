@@ -1,26 +1,4 @@
 const db = require('../config/db_sequelize');
-var cargoParm = '0';
-var sexoParm = 'X';
-const query =   " select" +
-                "   case " +
-                "     when iv.candidato = -1 then \'Nulos\'"+
-                "     when iv.candidato = 0 then \'Brancos\'"+
-                "     else c.nome "+
-                "   end as candidato, "+
-                "   cast((cast(count(1) as decimal(10,2)) / cast((select count(1) from intencaovotos where cargo = " + cargoParm + " and (sexo = '" + sexoParm + "' or '" + sexoParm + "' = 'X')) as decimal(10,2))) * 100 as decimal(10,2)) || '%' as percentual, "+
-                "   count(1) as total "+
-                " from "+
-                "   intencaovotos as iv "+
-                "   left join candidatos as c "+
-                "     on( "+
-                "       c.id = iv.candidato "+
-                "     ) "+
-                " where "+
-                "   iv.cargo = " + cargoParm + " and "+
-                "   ( iv.sexo = '" + sexoParm + "' or '" + sexoParm + "' = 'X' ) "+
-                " group by "+
-                "   c.nome, "+
-                "   iv.candidato ";
 module.exports = {
     async cadastrarCandidato(req, res){
         console.log(req.body.nome + " - " + req.body.partido + " - " + req.body.cargo);
@@ -88,10 +66,87 @@ module.exports = {
             res.status(204).json({"data": {"status": "no content", "errorMessage": "Candidato não encontrado"}});
     },
     async getResultados(req, res){
-        sexoParm = 'X';
-        var sexo = req.body.sexo; 
-        if(sexo != undefined && sexo)
-            sexoParm = sexo;
+        var sexoParm = 'X';
+        var cargoParm = 0;
+        if(req.body.sexo != undefined && req.body.sexo)
+            sexoParm = req.body.sexo;
+        if(req.body.cargo != undefined && req.body.cargo)
+            cargoParm = parseInt(req.body.cargo);
+        
+        const queryPres = " select "+
+                        " case "+
+                          "  when iv.presidente = -1 then 'Nulos'"+
+                          "  when iv.presidente = 0 then 'Brancos'"+
+                          " else c.nome "+
+                       " end as presidente,"+
+                        " cast("+
+                            " ("+
+                                " cast(count(1) as decimal(10, 2)) / cast("+
+                                    " ("+
+                                        " select"+
+                                            " count(1)"+
+                                        " from"+
+                                            " intencaovotos"+
+                                        " where"+
+                                            " ("+
+                                                " sexo = '" + sexoParm + "'"+
+                                                " or '" + sexoParm + "' = 'X'"+
+                                            " )"+
+                                    " ) as decimal(10, 2)"+
+                                 " )"+
+                            " ) * 100 as decimal(10, 2)"+
+                        " ) || '%' as percentual,"+
+                        " count(1) as total "+
+                    " from "+
+                        " intencaovotos as iv "+
+                        " left join candidatos as c on(c.id = iv.presidente) "+
+                    " where "+
+                     "   ( "+
+                           " iv.sexo = '" + sexoParm + "' "+
+                            " or '" + sexoParm + "' = 'X' "+
+                        " ) "+
+                    " group by "+
+                        " c.nome, "+
+                        " iv.presidente ";
+        const queryGov = " select "+
+                        " case "+
+                        "  when iv.governador = -1 then 'Nulos'"+
+                        "  when iv.governador = 0 then 'Brancos'"+
+                        " else c.nome "+
+                    " end as governador,"+
+                        " cast("+
+                            " ("+
+                                " cast(count(1) as decimal(10, 2)) / cast("+
+                                    " ("+
+                                        " select"+
+                                            " count(1)"+
+                                        " from"+
+                                            " intencaovotos"+
+                                        " where"+
+                                            " ("+
+                                                " sexo = '" + sexoParm + "'"+
+                                                " or '" + sexoParm + "' = 'X'"+
+                                            " )"+
+                                    " ) as decimal(10, 2)"+
+                                " )"+
+                            " ) * 100 as decimal(10, 2)"+
+                        " ) || '%' as percentual,"+
+                        " count(1) as total "+
+                    " from "+
+                        " intencaovotos as iv "+
+                        " left join candidatos as c on(c.id = iv.governador) "+
+                    " where "+
+                    "   ( "+
+                        " iv.sexo = '" + sexoParm + "' "+
+                            " or '" + sexoParm + "' = 'X' "+
+                        " ) "+
+                    " group by "+
+                        " c.nome, "+
+                        " iv.governador "+
+                    " order by "+
+                    "    count(1) ";
+        var query = queryPres;
+        if(cargoParm == 1) query = queryGov;
 
         const [result, metadata] = await db.sequelize.query(query);
         return res.status(200).json(result);
@@ -99,37 +154,38 @@ module.exports = {
     async registrarVoto(req, res){
         var cpf = req.body.cpf;
         var sexo = req.body.sexo;
-        var candidato = req.body.candidato;
+        var gov = req.body.governador;
+        var pres = req.body.presidente;
         var cargo = req.body.cargo;
+        var erro = false;
 
-        if(!cpf || !sexo || !cargo)
+        if(!cpf || !sexo)
             return res.status(400).json({"data": {"status": "error", "errorMessage": "Parâmetro(s) nulo(s)!"}});
-        if((candidato == undefined ? 0 : candidato) > 0){
-            const [candidatoBusca, metadata] = await db.sequelize.query('select cargo from candidatos where id = ' + candidato);
-            if(candidatoBusca && candidatoBusca[0]){
-                console.log(candidatoBusca[0]);
-                var cargoBusca = candidatoBusca[0].cargo;
-                console.log(cargoBusca);
-                if(cargoBusca != cargo)
-                    return res.status(400).json({"data": {"status": "error", "errorMessage": "Candidato não está concorrendo ao cargo informado"}});
-            }
-            else{
-                console.log("erro RETORNOU");
-                return res.status(204).json({"data": {"status": "no content", "message": "Candidato não encontrado"}});
-            }
+        
+        if((gov == undefined ? 0 : gov) > 0){
+            var govBusca = await db.Candidato.findOne({where: {id: gov, cargo: 1}});
+            if(!govBusca) erro = true;
+        }
+        if((pres == undefined ? 0 : pres) > 0){
+            var presBusca = await db.Candidato.findOne({where: {id: pres, cargo: 0}});
+            if(!presBusca) erro = true
         }
 
-        if(candidato == undefined || !candidato) candidato = -1;
+        if(erro)
+            return res.status(204).json({"data": {"status": "no content", "message": "Candidatos não encontrados ou cargos incorretos."}});
 
-        var intencao = await db.IntencaoVoto.findOne({where: {cpf: cpf, cargo: cargo}});
+        if(gov == undefined || !gov) gov = -1;
+        if(pres == undefined || !pres) pres = -1;
+
+        var intencao = await db.IntencaoVoto.findOne({where: {cpf: cpf}});
         if(intencao){
             return res.status(401).json({"data": {"status": "error", "errorMessage": "Já existe uma intenção de voto do eleitor para esse cargo."}});
         }
         var intencaoVoto = await db.IntencaoVoto.create({
             cpf: cpf,
             sexo: sexo,
-            candidato: candidato,
-            cargo: cargo
+            governador: gov,
+            presidente: pres
         });
         if(intencaoVoto)
             return res.status(201).json({"data": {"status": "success", intencaoVoto}});

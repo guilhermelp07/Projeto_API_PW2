@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize');
-const sequelize = new Sequelize('web2_API' , 'postgres', 'sql#123', { //trocar a senha pro teu banco, animal
+const sequelize = new Sequelize('web2_API' , 'postgres', 'sql#123', {
     host: 'localhost',
     dialect: 'postgres'
   });

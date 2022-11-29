@@ -15,13 +15,13 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.STRING,
             allowNull: false
         },
-        candidato: {
+        governador: {
             type: Sequelize.INTEGER,
             allowNull: true
         },
-        cargo: {
+        presidente: {
             type: Sequelize.INTEGER,
-            allowNull: false
+            allowNull: true
         }
     });
     return intencaoVoto;

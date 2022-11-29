@@ -9,6 +9,7 @@ const swaggerUI = require('swagger-ui-express');
 const db = require('./config/db_sequelize');
 const app = express();
 
+app.use(express.json());
 app.use(cookieParser());
 app.engine('handlebars', handlebars.engine({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
@@ -18,7 +19,6 @@ app.use(express.static("images"));
 app.use(express.static(path.join(__dirname, 'public')));
 
 const swaggerDocument = require('./swagger.json');
-app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
 app.use("/api-docs",swaggerUI.serve, swaggerUI.setup(swaggerDocument));

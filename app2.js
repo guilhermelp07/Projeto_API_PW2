@@ -10,16 +10,18 @@ const app = express();
 
 //Teste do Post
 app.get('/testePostCandidato', async (req,res)=>{
-    var resposta = await unirest.post('http://localhost:8081/api/candidato')
-    .send({"nome": "Bolsonaro", "partido": "PL", "cargo": "0"});
-    res.send(resposta);
-});
-
-//400: bad request
-app.get('/testePostCandidatoNulo', async (req,res)=>{
-    var resposta = await unirest.post('http://localhost:8081/api/candidato')
-    .send({"nome": "Bolsonaro"});
-    res.send(resposta);
+    var req = unirest('POST', 'http://localhost:8081/api/candidato')
+    .headers({
+      'Content-Type': 'application/x-www-form-urlencoded'
+    })
+    .send('nome=Ciro Gomes')
+    .send('partido=PDT')
+    .send('cargo=0')
+    .end(function (res) { 
+      if (res.error) throw new Error(res.error); 
+      console.log(res.raw_body);
+    });
+    res.send(req);
 });
 
 app.get('/testePutCandidato/:id', async (req,res)=>{
@@ -37,7 +39,6 @@ app.get('/testeDeleteCandidato/:id', async (req,res)=>{
 
 app.get('/testeGetCandidatos', async (req,res)=>{
     var resposta = await unirest.get('http://localhost:8081/api/candidato');
-    console.log(resposta.body.data.candidatos[0].nome);
     res.send(resposta);
 });
 
