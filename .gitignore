@@ -103,3 +103,8 @@ dist
 # TernJS port file
 .tern-port
 package-lock.json
+
+#html files
+public/candidatoCreate.html
+public/intencaoVotoRegister.html
+public/index.html

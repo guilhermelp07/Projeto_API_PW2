@@ -5,23 +5,37 @@
  */
 
 const express = require("express");
+const { unregisterDecorator } = require("handlebars");
 const unirest = require("unirest");
 const app = express();
 
-//Teste do Post
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
+
+
 app.get('/testePostCandidato', async (req,res)=>{
-    var req = unirest('POST', 'http://localhost:8081/api/candidato').send(req);
-    res.send(req);
+    console.log(req.body);
+    var resposta = await unirest.post('http://localhost:8081/api/candidato').send(req.body);
+    res.send(resposta);
 });
 
 app.get('/testePutCandidato/:id', async (req,res)=>{
     const {id} = req.params;
-    var resposta = await unirest.put('http://localhost:8081/api/candidato/'+id).send(req);
+    var resposta = await unirest.put('http://localhost:8081/api/candidato/'+id).send(req.body);
+    res.send(resposta);
+});
+
+app.get('/testeDeleteCandidato/:id', async (req,res)=>{
+    console.log("ENTROU NO DELETE")
+    const {id} = req.params;
+    console.log("delete candidato: " + id);
+    var resposta = await unirest.delete('http://localhost:8081/api/candidato/'+id);
     res.send(resposta);
 });
 
 app.get('/testeDeleteCandidato/:id', async (req,res)=>{
     const {id} = req.params;
+    console.log("delete candidato: " + id);
     var resposta = await unirest.delete('http://localhost:8081/api/candidato/'+id);
     res.send(resposta);
 });
@@ -38,19 +52,18 @@ app.get('/testeGetCandidato/:id', async (req,res)=>{
 });
 
 app.get('/testePostIntencaoVoto', async (req,res)=>{
-    var resposta = await unirest.post('http://localhost:8081/api/intencaovoto').send(req);
+    var resposta = await unirest.post('http://localhost:8081/api/intencaovoto').send(req.body);
     res.send(resposta);
 });
 
-app.get('/testePostIntencaoVoto2', async (req,res)=>{
-    var resposta = await unirest.post('http://localhost:8081/api/intencaovoto')
-    .send(req);
+app.get('/testeDeleteIntencaoVoto', async (req,res)=>{
+    var resposta = await unirest.delete('http://localhost:8081/api/intencaovoto').send(req.body);
     res.send(resposta);
 });
 
 app.get('/testeGetResultados', async (req,res)=>{
     var resposta = await unirest.get('http://localhost:8081/api/resultados').send(req);
     res.send(resposta);
-})
+});
 
 app.listen(3000, function(){ console.log("Servidor no http://localhost:3000")});
