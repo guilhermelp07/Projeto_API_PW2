@@ -62,7 +62,7 @@ app.get('/testeDeleteIntencaoVoto', async (req,res)=>{
 });
 
 app.get('/testeGetResultados', async (req,res)=>{
-    var resposta = await unirest.get('http://localhost:8081/api/resultados').send(req);
+    var resposta = await unirest.get('http://localhost:8081/api/resultados').send(req.body);
     res.send(resposta);
 });
 
