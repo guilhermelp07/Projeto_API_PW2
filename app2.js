@@ -10,24 +10,13 @@ const app = express();
 
 //Teste do Post
 app.get('/testePostCandidato', async (req,res)=>{
-    var req = unirest('POST', 'http://localhost:8081/api/candidato')
-    .headers({
-      'Content-Type': 'application/x-www-form-urlencoded'
-    })
-    .send('nome=Ciro Gomes')
-    .send('partido=PDT')
-    .send('cargo=0')
-    .end(function (res) { 
-      if (res.error) throw new Error(res.error); 
-      console.log(res.raw_body);
-    });
+    var req = unirest('POST', 'http://localhost:8081/api/candidato').send(req);
     res.send(req);
 });
 
 app.get('/testePutCandidato/:id', async (req,res)=>{
     const {id} = req.params;
-    var resposta = await unirest.put('http://localhost:8081/api/candidato/'+id)
-    .send({"nome": "Jair Bolsonaro", "partido": "Partido Liberal", "cargo": "0"});
+    var resposta = await unirest.put('http://localhost:8081/api/candidato/'+id).send(req);
     res.send(resposta);
 });
 
@@ -49,8 +38,7 @@ app.get('/testeGetCandidato/:id', async (req,res)=>{
 });
 
 app.get('/testePostIntencaoVoto', async (req,res)=>{
-    var resposta = await unirest.post('http://localhost:8081/api/intencaovoto')
-    .send({"cpf": "54321787", "sexo": "M", "candidato": "1", "cargo": '0'});
+    var resposta = await unirest.post('http://localhost:8081/api/intencaovoto').send(req);
     res.send(resposta);
 });
 
@@ -59,5 +47,10 @@ app.get('/testePostIntencaoVoto2', async (req,res)=>{
     .send(req);
     res.send(resposta);
 });
+
+app.get('/testeGetResultados', async (req,res)=>{
+    var resposta = await unirest.get('http://localhost:8081/api/resultados').send(req);
+    res.send(resposta);
+})
 
 app.listen(3000, function(){ console.log("Servidor no http://localhost:3000")});

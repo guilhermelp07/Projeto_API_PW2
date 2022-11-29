@@ -34,14 +34,17 @@ module.exports = {
         if(!candidato || candidato == undefined){
             return res.status(204).json({"data": {"status": "error", "errorMessage": "Candidato com o id informado não encontrado!"}});
         }
-    
-        var intencoes = await db.IntencaoVoto.findOne({where: {candidato: req.params.id}});
+        var intencoes = {};
+        if(candidato.cargo == 0)
+            intencoes = await db.IntencaoVoto.findOne({where: {presidente: req.params.id}});
+        else
+            intencoes = await db.IntencaoVoto.findOne({where: {governador: req.params.id}});
         if(intencoes){
             console.log("if das intencoes")
             return res.status(204).json({"data": {"status": "error", "errorMessage": "Impossível deletar um candidato que já possua intenções de voto!"}});
         }
         else {
-            console.log("else das intencoes")
+            console.log("else das intencoes");
             var candidatoDelete = await db.Candidato.destroy({where: {id: req.params.id}});
             if(candidatoDelete)   
                 return res.status(202).json({"data": {"status": "success", "message": "Candidato excluído da base de dados", candidato}});
@@ -188,11 +191,20 @@ module.exports = {
             presidente: pres
         });
         if(intencaoVoto)
-            return res.status(201).json({"data": {"status": "success", intencaoVoto}});
+            return res.status(201).json({"data": {"status": "success", "message": "Intenção de voto registrada com sucesso", intencaoVoto}});
         else
-            return res.status(502).json({"data": {"status": "internal server error", "errorMessage": "Não foi possível criar a intenção de voto."}});
+            return res.status(502).json({"data": {"status": "internal server error", "errorMessage": "Não foi possível criar a intenção de voto"}});
     },
     async deletarVoto(req, res){
-        
+        var cpf = req.body.cpf;
+        if((cpf || cpf != undefined) && cpf != ''){
+            voto = db.IntencaoVoto.destroy({where: {cpf: cpf}});
+            if(voto)
+                return res.status(202).json({"data": {"status": "success", "message": "Intenção de voto excluída da base de dados", voto}});
+            else
+                return res.status(204).json({"data": {"status": "internal server error", "message": "Intenção de voto não encontrada", voto}});
+        }
+        else
+            return res.status(400).json({"data": {"status": "internal server error", "errorMessage": "Parâmetro nulo"}});
     }
 }
